@@ -1,10 +1,10 @@
 from flask import Flask
-from .config import Config
+from .config import settings
 from .extensions import db, migrate, cors
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(settings)
 
     db.init_app(app)
     migrate.init_app(app, db)
