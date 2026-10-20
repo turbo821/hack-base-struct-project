@@ -266,8 +266,8 @@ def create_app():
     migrate.init_app(app, db)
     cors.init_app(app)
 
-    from .routes.health import bp as health_bp
-    app.register_blueprint(health_bp, url_prefix="/api")
+    from .routes.health import router as health_router
+    app.register_blueprint(health_router, url_prefix="/api")
 
     return app
 ```
@@ -277,9 +277,9 @@ def create_app():
 ```python
 from flask import Blueprint, jsonify
 
-bp = Blueprint("health", __name__)
+router = Blueprint("health", __name__)
 
-@bp.get("/health")
+@router.get("/health")
 def health():
     return jsonify(status="ok")
 ```

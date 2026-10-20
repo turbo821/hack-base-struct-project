@@ -1,6 +1,8 @@
 from flask import Flask
+
 from .config import settings
-from .extensions import db, migrate, cors
+from .extensions import cors, db, migrate
+
 
 def create_app():
     app = Flask(__name__)
@@ -10,7 +12,8 @@ def create_app():
     migrate.init_app(app, db)
     cors.init_app(app)
 
-    from .routes.health import bp as health_bp
-    app.register_blueprint(health_bp, url_prefix="/api")
+    from .routes.health import router as health_router
+
+    app.register_blueprint(health_router, url_prefix="/api")
 
     return app
