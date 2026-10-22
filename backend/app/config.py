@@ -4,7 +4,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     # SQLALCHEMY_TRACK_MODIFICATIONS = False
     sqlalchemy_track_modifications: bool = False
-    database_url: str = "postgresql://app:app@db:5432/app"
+    # SQLite. Относительный путь (sqlite:///) Flask-SQLAlchemy разрешает
+    # относительно папки instance приложения: backend/instance/app.db
+    database_url: str = "sqlite:///app.db"
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     # jwt

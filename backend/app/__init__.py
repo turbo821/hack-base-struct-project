@@ -4,9 +4,10 @@ from flask import Flask
 
 from .config import settings
 from .extensions import cors, db, migrate
-from .logging_config import setup_logging, get_logger
+from .logging_config import get_logger, setup_logging
 
 logger = get_logger("main_init")
+
 
 def create_app():
     setup_logging(name="backend")
@@ -15,12 +16,17 @@ def create_app():
     logger.info("Инициализация backend-приложения")
 
     logger.info("Инициализация .env-переменных")
-    app.config.from_object(settings)
+    # from_object копирует только UPPERCASE-атрибуты, а поля pydantic-settings
+    # в нижнем регистре — поэтому прокидываем нужные значения явно.
+    app.config["SQLALCHEMY_DATABASE_URI"] = settings.database_url
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = (
+        settings.sqlalchemy_track_modifications
+    )
     logger.info(".env-переменные в порядке")
 
-    # db.init_app(app)
-    # migrate.init_app(app, db)
-    # cors.init_app(app)
+    db.init_app(app)
+    migrate.init_app(app, db)
+    cors.init_app(app)
 
     from .routes.health import router as health_router
 
