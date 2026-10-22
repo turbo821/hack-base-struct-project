@@ -453,10 +453,8 @@ def create_app():
     migrate.init_app(app, db, render_as_batch=True)
     cors.init_app(app)
 
-    from .routes.health import bp as health_bp
-    from .routes.hello import bp as hello_bp
-    app.register_blueprint(health_bp, url_prefix="/api")
-    app.register_blueprint(hello_bp, url_prefix="/api")
+    from .routes.health import router as health_router
+    app.register_blueprint(health_router, url_prefix="/api")
 
     return app
 ```
@@ -468,6 +466,11 @@ def create_app():
 ```python
 from app import create_app
 
+router = Blueprint("health", __name__)
+
+@router.get("/health")
+def health():
+    return jsonify(status="ok")
 app = create_app()
 ```
 
@@ -593,5 +596,13 @@ instance/
 - **Git.** Договоритесь о ветках заранее (`main` плюс по ветке на человека или фичу) и закоммитьте каркас до того, как все начнут писать код. Это убережёт от конфликтов.
 - **Миграции.** Модели меняйте по очереди, а файлы миграций коммитьте сразу, чтобы не получить несколько heads.
 - **Контракт API.** В первый час зафиксируйте список эндпоинтов и формат JSON. Фронт тогда может работать на заглушках, пока бек не готов.
-- **Если интерфейс усложнится.** Без фреймворка быстро становится тяжело с состоянием и несколькими страницами. Выручают небольшие библиотеки: Alpine.js (реактивность через атрибуты в HTML), Navigo (роутинг), Chart.js (графики).
-- **Продакшен-деплой.** Для демо dev-режима обычно достаточно. Если нужен прод, соберите фронт через `npm run build` и отдайте через nginx, а бек запустите через gunicorn (`gunicorn main:app`). SQLite в проде подходит только для небольшой нагрузки.
+- **Продакшен-деплой.** Для демо dev-режима обычно достаточно. Если нужен прод, соберите фронт через `npm run build` и отдайте через nginx, а бек запустите через gunicorn (`gunicorn main:app`).
+
+---------------ИСПОЛЬЗОВАНИЕ ЛОГГЕРА--------------------
+from app.logging_config import get_logger
+logger = get_logger(__name__) #теперь можем пользоваться
+
+
+logger.info("Пользователь зарегистрирован") #для отметки этапа
+logger.warning("Email уже занят") #для предвиденной ошибки
+logger.exception("Ошибка при сохранении")    #Для полной информации об ошибке(с трейсбеком)
