@@ -30,7 +30,7 @@ def create_app():
     cors.init_app(app)
 
     from .routes.health import router as health_router
-    from .routes.hello import bp as hello_router
+    from .routes.hello import router as hello_router
     
     app.register_blueprint(health_router, url_prefix="/api")
     app.register_blueprint(hello_router, url_prefix="/api")
